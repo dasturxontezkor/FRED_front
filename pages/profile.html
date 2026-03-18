@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FR3D – Profile</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#ffffff;--primary:#535da1;--secondary:#14B789;
+  --bg:#f9f9f9;--dark:#000000;--p:#717275;
+  --border:#e9eaeb;--feat:#727aab;
+  --nav-w:240px;--top-h:64px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+body{background:var(--bg);color:var(--dark);transition:background .3s,color .3s;}
+
+/* LOADER */
+.page-loader{position:fixed;inset:0;background:var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:1;transition:opacity .4s;}
+.page-loader.hide{opacity:0;pointer-events:none;}
+.loader-logo{color:#fff;font-size:36px;font-weight:800;letter-spacing:3px;margin-bottom:28px;}
+.loader-logo span{color:var(--secondary);}
+.loader-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* SIDEBAR */
+.sidebar{display:none;}
+@media(min-width:768px){
+  .sidebar{display:flex;flex-direction:column;position:fixed;top:0;left:0;width:var(--nav-w);height:100vh;background:var(--primary);padding:28px 0;z-index:100;box-shadow:4px 0 20px rgba(83,93,161,.15);}
+  .sidebar-logo{color:#fff;font-size:26px;font-weight:800;letter-spacing:2px;padding:0 28px 32px;border-bottom:1px solid rgba(255,255,255,.15);cursor:pointer;user-select:none;}
+  .sidebar-logo span{color:var(--secondary);}
+  .sidebar-nav{flex:1;padding:24px 0;display:flex;flex-direction:column;gap:4px;}
+  .nav-item-side{display:flex;align-items:center;gap:14px;padding:13px 28px;color:rgba(255,255,255,.65);font-size:14px;font-weight:500;cursor:pointer;border-left:3px solid transparent;transition:all .2s;text-decoration:none;}
+  .nav-item-side i{font-size:17px;width:20px;text-align:center;}
+  .nav-item-side:hover{background:rgba(255,255,255,.08);color:#fff;}
+  .nav-item-side.active{background:rgba(255,255,255,.12);color:#fff;border-left:3px solid var(--secondary);}
+  .main-content{margin-left:var(--nav-w);}
+  .bottom-nav{display:none !important;}
+}
+
+/* TOPBAR */
+.topbar{background:#fff;padding:0 20px;height:var(--top-h);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:12px;}
+.topbar-logo{color:var(--primary);font-weight:800;font-size:22px;letter-spacing:2px;cursor:pointer;user-select:none;white-space:nowrap;}
+.topbar-logo span{color:var(--secondary);}
+@media(min-width:768px){.topbar-logo{display:none;}}
+.topbar-title{font-size:16px;font-weight:700;color:var(--dark);}
+@media(max-width:767px){.topbar-title{display:none;}}
+.topbar-actions{display:flex;align-items:center;gap:6px;}
+.action-btn{width:38px;height:38px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--p);transition:all .2s;font-size:15px;}
+.action-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+.action-btn.red:hover{background:#e74c3c;border-color:#e74c3c;}
+
+/* PAGE */
+.page{padding:28px 20px 100px;max-width:800px;}
+@media(min-width:768px){.page{padding:32px 36px 48px;}}
+
+/* HERO CARD */
+.profile-hero{background:linear-gradient(135deg,var(--primary) 0%,#3d4580 100%);border-radius:24px;padding:32px 28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%;}
+.profile-hero::after{content:'';position:absolute;bottom:-60px;right:60px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%;}
+.hero-inner{display:flex;align-items:center;gap:20px;position:relative;z-index:1;}
+.avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;text-transform:uppercase;}
+.hero-info{flex:1;min-width:0;}
+.hero-name{font-size:22px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.65);margin-top:3px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,183,137,.25);border:1px solid rgba(20,183,137,.4);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-top:8px;}
+.hero-badge i{color:var(--secondary);}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.1);border-radius:16px;overflow:hidden;margin-top:24px;position:relative;z-index:1;}
+.hero-stat{background:rgba(255,255,255,.07);padding:14px 12px;text-align:center;}
+.hero-stat-val{font-size:22px;font-weight:800;color:#fff;line-height:1;}
+.hero-stat-lbl{font-size:10px;color:rgba(255,255,255,.55);margin-top:3px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* SHIMMER */
+.shimmer{display:inline-block;border-radius:6px;background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sh 1.2s infinite;}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* SECTION CARD */
+.card{background:#fff;border-radius:20px;padding:24px;border:1px solid var(--border);margin-bottom:16px;}
+.card-title{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.card-title i{color:var(--primary);font-size:14px;}
+
+/* INFO ROWS */
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;}
+.info-row:last-child{border-bottom:none;}
+.info-label{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--p);}
+.info-label i{width:28px;height:28px;border-radius:8px;background:rgba(83,93,161,.08);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.info-val{font-size:13px;font-weight:700;color:var(--dark);text-align:right;}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(min-width:480px){.stat-grid{grid-template-columns:repeat(4,1fr);}}
+.stat-box{background:var(--bg);border-radius:14px;padding:16px;border:1px solid var(--border);text-align:center;}
+.stat-box-val{font-size:22px;font-weight:800;color:var(--primary);line-height:1;}
+.stat-box-lbl{font-size:11px;color:var(--p);margin-top:4px;}
+
+/* PROGRESS BARS */
+.prog-item{margin-bottom:14px;}
+.prog-item:last-child{margin-bottom:0;}
+.prog-header{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px;}
+.prog-header span:last-child{color:var(--primary);}
+.prog-track{height:7px;background:var(--border);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+.prog-fill.blue  {background:linear-gradient(90deg,var(--primary),#727aab);}
+.prog-fill.green {background:linear-gradient(90deg,var(--secondary),#0ea874);}
+.prog-fill.purple{background:linear-gradient(90deg,#a855f7,#7c3aed);}
+.prog-fill.orange{background:linear-gradient(90deg,#f97316,#ea580c);}
+
+/* RECENT RESULTS */
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:12px;}
+.result-row:last-child{border-bottom:none;}
+.rr-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.rr-icon{width:36px;height:36px;border-radius:10px;background:rgba(83,93,161,.08);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.rr-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.rr-date{font-size:11px;color:var(--p);margin-top:2px;}
+.rr-right{text-align:right;flex-shrink:0;}
+.rr-pct{font-size:15px;font-weight:800;}
+.rr-detail{font-size:11px;color:var(--p);margin-top:1px;}
+.pct-high{color:var(--secondary);}
+.pct-mid{color:var(--feat);}
+.pct-low{color:#e74c3c;}
+
+/* EMPTY */
+.empty{text-align:center;padding:28px 16px;color:var(--p);}
+.empty i{font-size:32px;opacity:.2;display:block;margin-bottom:8px;}
+.empty p{font-size:13px;}
+.empty a{display:inline-block;margin-top:10px;padding:8px 18px;background:var(--primary);color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;}
+
+/* LOGOUT BTN */
+.logout-card{background:#fff;border-radius:20px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;}
+.logout-btn-full{width:100%;padding:16px;background:transparent;border:none;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:700;color:#e74c3c;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s;}
+.logout-btn-full:hover{background:rgba(231,76,60,.05);}
+.logout-btn-full i{font-size:16px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal{background:#fff;border-radius:20px;padding:32px 28px;width:90%;max-width:360px;text-align:center;transform:scale(.9);transition:transform .25s;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-overlay.show .modal{transform:scale(1);}
+.modal-icon{width:60px;height:60px;background:rgba(231,76,60,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:#e74c3c;}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--p);margin-bottom:24px;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns button{flex:1;padding:11px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;}
+.btn-cancel{background:var(--bg);border:1px solid var(--border)!important;color:var(--p);}
+.btn-cancel:hover{background:var(--border);}
+.btn-logout{background:#e74c3c;color:#fff;}
+.btn-logout:hover{background:#c0392b;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:10px 0 14px;border-top:1px solid var(--border);z-index:100;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--p);cursor:pointer;padding:6px 18px;border-radius:12px;transition:all .2s;text-decoration:none;}
+.nav-item i{font-size:20px;}
+.nav-item.active{color:var(--primary);background:rgba(83,93,161,.08);}
+
+/* DARK MODE */
+body.dark{background:#0f0f14;color:#fff;--bg:#1a1a24;--border:#2a2a38;--dark:#ffffff;--p:#8888aa;}
+body.dark .topbar,body.dark .card,body.dark .logout-card,body.dark .bottom-nav{background:#1a1a24;border-color:#2a2a38;}
+body.dark .action-btn{background:#111118;border-color:#2a2a38;color:#8888aa;}
+body.dark .sidebar{background:#12121c;}
+body.dark .modal{background:#1a1a24;}
+body.dark .btn-cancel{background:#111118;border-color:#2a2a38!important;color:#8888aa;}
+body.dark .stat-box{background:#111118;border-color:#2a2a38;}
+body.dark .rr-icon{background:rgba(83,93,161,.2);}
+body.dark .info-label i{background:rgba(83,93,161,.2);}
+body.dark .shimmer{background:linear-gradient(90deg,#2a2a38 25%,#1a1a24 50%,#2a2a38 75%);background-size:200% 100%;}
+body.dark .logout-btn-full:hover{background:rgba(231,76,60,.1);}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">FR<span>3D</span></div>
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal">
+    <div class="modal-icon"><i class="fa fa-right-from-bracket"></i></div>
+    <h3>Chiqmoqchimisiz?</h3>
+    <p>Hisobingizdan chiqib ketasiz. Keyingi safar qayta kirishingiz kerak bo'ladi.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeLogout()">Bekor qilish</button>
+      <button class="btn-logout" onclick="confirmLogout()">Chiqish</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">FR<span>3D</span></div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item-side"><i class="fa fa-table-cells"></i> Dashboard</a>
+    <a href="menu.html"      class="nav-item-side"><i class="fa fa-layer-group"></i> Menu</a>
+    <a href="profile.html"   class="nav-item-side active"><i class="fa fa-user"></i> Profile</a>
+    <a href="settings.html"  class="nav-item-side"><i class="fa fa-gear"></i> Settings</a>
+  </nav>
+  <div class="nav-item-side" style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:20px;" onclick="openLogout()">
+    <i class="fa fa-right-from-bracket"></i> Logout
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+  <div class="topbar">
+    <div class="topbar-logo">FR<span>3D</span></div>
+    <div class="topbar-title">Mening Profilim</div>
+    <div class="topbar-actions">
+      <div class="action-btn" onclick="toggleDark()"><i class="fa fa-moon" id="darkIcon"></i></div>
+      <div class="action-btn red" onclick="openLogout()"><i class="fa fa-right-from-bracket"></i></div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="profile-hero">
+      <div class="hero-inner">
+        <div class="avatar" id="avatarEl">U</div>
+        <div class="hero-info">
+          <div class="hero-name" id="heroName">Yuklanmoqda...</div>
+          <div class="hero-sub" id="heroSub">FR3D English Platform</div>
+          <div class="hero-badge"><i class="fa fa-circle-check"></i> Faol o'quvchi</div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-tests">—</div>
+          <div class="hero-stat-lbl">Testlar</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-avg">—</div>
+          <div class="hero-stat-lbl">O'rtacha</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-best">—</div>
+          <div class="hero-stat-lbl">Eng Yaxshi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MA'LUMOTLAR -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-id-card"></i> Shaxsiy Ma'lumotlar</div>
+      <div class="info-row">
+        <div class="info-label"><i class="fa fa-user"></i> Foydalanuvchi nomi</div>
+        <div class="info-val" id="infoUsername">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label"><i class="fa fa-clock"></i> Jami o'qish vaqti</div>
+        <div class="info-val" id="infoTime">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label"><i class="fa fa-calendar-check"></i> A'zo bo'lgan sana</div>
+        <div class="info-val" id="infoJoined">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label"><i class="fa fa-chart-line"></i> Holat</div>
+        <div class="info-val" style="color:var(--secondary)">Faol</div>
+      </div>
+    </div>
+
+    <!-- STATISTIKA -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-chart-bar"></i> Statistika</div>
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-box">
+          <div class="stat-box-val" id="s-total">—</div>
+          <div class="stat-box-lbl">Jami Testlar</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val" id="s-avg">—</div>
+          <div class="stat-box-lbl">O'rtacha Ball</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val" id="s-best">—</div>
+          <div class="stat-box-lbl">Eng Yaxshi</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val" id="s-time">—</div>
+          <div class="stat-box-lbl">Vaqt</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DARAJA PROGRESSI -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-layer-group"></i> Daraja Progressi</div>
+      <div id="levelProgress">
+        <div class="prog-item">
+          <div class="prog-header"><span>Yuklanmoqda...</span><span>0%</span></div>
+          <div class="prog-track"><div class="prog-fill blue shimmer" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SO'NGGI NATIJALAR -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-list-check"></i> So'nggi Natijalar</div>
+      <div id="recentResults">
+        <span class="shimmer" style="width:100%;height:44px;display:block;border-radius:8px;margin-bottom:8px"></span>
+        <span class="shimmer" style="width:100%;height:44px;display:block;border-radius:8px;margin-bottom:8px"></span>
+        <span class="shimmer" style="width:100%;height:44px;display:block;border-radius:8px"></span>
+      </div>
+    </div>
+
+    <!-- LOGOUT -->
+    <div class="logout-card">
+      <button class="logout-btn-full" onclick="openLogout()">
+        <i class="fa fa-right-from-bracket"></i>
+        Hisobdan chiqish
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><i class="fa fa-table-cells"></i>Dashboard</a>
+  <a href="menu.html"      class="nav-item"><i class="fa fa-layer-group"></i>Menu</a>
+  <a href="profile.html"   class="nav-item active"><i class="fa fa-user"></i>Profile</a>
+  <a href="settings.html"  class="nav-item"><i class="fa fa-gear"></i>Settings</a>
+</nav>
+
+<script>
+var API = "https://fr3dbg-production.up.railway.app";
+var storedToken = localStorage.getItem("token");
+var storedUser  = localStorage.getItem("username");
+
+if (!storedToken || !storedUser) {
+  window.location.href = "../auth/login.html";
+}
+
+function authHeaders() {
+  return { "Authorization": "Bearer " + storedToken, "Content-Type": "application/json" };
+}
+
+/* ── INIT ── */
+window.addEventListener("load", function() {
+  loadProfile();
+  setTimeout(function() {
+    document.getElementById("pageLoader").classList.add("hide");
+  }, 600);
+});
+
+async function loadProfile() {
+  // Username ni darhol ko'rsat
+  var uname = storedUser || "User";
+  document.getElementById("heroName").textContent    = uname;
+  document.getElementById("infoUsername").textContent = uname;
+  document.getElementById("avatarEl").textContent    = uname.charAt(0).toUpperCase();
+  document.getElementById("heroSub").textContent     = "@" + uname.toLowerCase();
+
+  // A'zo bo'lgan sana (localStorage dan yoki bugun)
+  var joined = localStorage.getItem("joinedAt");
+  document.getElementById("infoJoined").textContent = joined
+    ? new Date(joined).toLocaleDateString("uz-UZ")
+    : new Date().toLocaleDateString("uz-UZ");
+
+  try {
+    var [sRes, rRes, lRes] = await Promise.all([
+      fetch(API + "/api/results/stats",  { headers: authHeaders() }),
+      fetch(API + "/api/results/my",     { headers: authHeaders() }),
+      fetch(API + "/api/levels",         { headers: authHeaders() })
+    ]);
+
+    if (sRes.status === 401) { confirmLogout(); return; }
+
+    var sData  = await sRes.json();
+    var rData  = await rRes.json();
+    var lData  = lRes.ok ? await lRes.json() : null;
+
+    var stats   = sData.stats   || sData;
+    var results = rData.results || rData || [];
+    var levels  = lData ? (lData.levels || lData || []) : [];
+
+    renderHero(stats);
+    renderInfoCards(stats);
+    renderLevelProgress(levels, results);
+    renderRecent(results.slice(0, 6));
+
+  } catch(e) {
+    console.error("Profile load error:", e);
+    renderHero(null);
+    renderInfoCards(null);
+    renderLevelProgress([], []);
+    renderRecent([]);
+  }
+}
+
+/* ── HERO ── */
+function renderHero(s) {
+  document.getElementById("h-tests").textContent = s ? (s.totalTests || 0) : "—";
+  document.getElementById("h-avg").textContent   = s ? Math.round(s.avgScore  || 0) + "%" : "—";
+  document.getElementById("h-best").textContent  = s ? Math.round(s.bestScore || 0) + "%" : "—";
+}
+
+/* ── INFO CARDS ── */
+function renderInfoCards(s) {
+  if (!s) {
+    ["s-total","s-avg","s-best","s-time","infoTime"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.textContent = "—";
+    });
+    return;
+  }
+  document.getElementById("s-total").textContent = s.totalTests || 0;
+  document.getElementById("s-avg").textContent   = Math.round(s.avgScore  || 0) + "%";
+  document.getElementById("s-best").textContent  = Math.round(s.bestScore || 0) + "%";
+  document.getElementById("s-time").textContent  = fmtTime(s.totalTimeSpent || 0);
+  document.getElementById("infoTime").textContent = fmtTimeLong(s.totalTimeSpent || 0);
+}
+
+/* ── LEVEL PROGRESS ── */
+function renderLevelProgress(levels, results) {
+  var el = document.getElementById("levelProgress");
+
+  if (!levels || !levels.length) {
+    // Levels API ishlamasa, avg score asosida umumiy progress
+    var avg = 0;
+    if (results.length) {
+      avg = results.reduce(function(s,r){ return s + (r.percentage||0); }, 0) / results.length;
+    }
+    el.innerHTML = buildProg("Umumiy Progress", Math.round(avg), "blue");
+    animateProg();
+    return;
+  }
+
+  // Har bir level uchun progress — o'sha leveldagi testlarni hisoblaymiz
+  var colors = ["blue","green","purple","orange"];
+  var html = "";
+
+  levels.slice(0,4).forEach(function(lv, i) {
+    // Shu levelga tegishli natijalar
+    var lvResults = results.filter(function(r) {
+      return r.levelId === lv.id || r.levelName === lv.name;
+    });
+
+    var pct = 0;
+    if (lvResults.length) {
+      pct = Math.round(lvResults.reduce(function(s,r){ return s+(r.percentage||0); },0) / lvResults.length);
+    }
+
+    html += buildProg(lv.name || ("Level " + (i+1)), pct, colors[i % colors.length]);
+  });
+
+  el.innerHTML = html;
+  animateProg();
+}
+
+function buildProg(label, pct, colorClass) {
+  return '<div class="prog-item">' +
+    '<div class="prog-header"><span>' + esc(label) + '</span><span>' + pct + '%</span></div>' +
+    '<div class="prog-track"><div class="prog-fill ' + colorClass + '" data-pct="' + pct + '" style="width:0%"></div></div>' +
+  '</div>';
+}
+
+function animateProg() {
+  setTimeout(function() {
+    document.querySelectorAll(".prog-fill[data-pct]").forEach(function(el) {
+      el.style.width = el.dataset.pct + "%";
+    });
+  }, 150);
+}
+
+/* ── RECENT RESULTS ── */
+function renderRecent(results) {
+  var el = document.getElementById("recentResults");
+  if (!results || !results.length) {
+    el.innerHTML = '<div class="empty"><i class="fa fa-file-circle-check"></i><p>Hali test topshirilmagan</p><a href="menu.html">Test boshlash →</a></div>';
+    return;
+  }
+  el.innerHTML = results.map(function(r) {
+    var pct = Math.round(r.percentage || 0);
+    var cls = pct >= 70 ? "pct-high" : pct >= 40 ? "pct-mid" : "pct-low";
+    var emoji = pct >= 80 ? "🏆" : pct >= 60 ? "✅" : pct >= 40 ? "📚" : "💪";
+    return '<div class="result-row">' +
+      '<div class="rr-left">' +
+        '<div class="rr-icon"><i class="fa fa-file-circle-check"></i></div>' +
+        '<div>' +
+          '<div class="rr-name">' + emoji + ' ' + esc(r.testName || "Test") + '</div>' +
+          '<div class="rr-date">' + fmtDate(r.finishedAt) + ' · ' + fmtSec(r.timeSpent||0) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="rr-right">' +
+        '<div class="rr-pct ' + cls + '">' + pct + '%</div>' +
+        '<div class="rr-detail">' + r.score + '/' + r.total + ' to\'g\'ri</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── HELPERS ── */
+function fmtTime(sec) {
+  if (!sec) return "0m";
+  var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+  return h > 0 ? h + "h " + (m ? m+"m":"") : m + "m";
+}
+function fmtTimeLong(sec) {
+  if (!sec) return "0 daqiqa";
+  var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+  if (h > 0) return h + " soat " + (m ? m+" daqiqa":"");
+  return m + " daqiqa";
+}
+function fmtSec(sec) {
+  if (!sec) return "0:00";
+  return Math.floor(sec/60) + ":" + String(sec%60).padStart(2,"0");
+}
+function fmtDate(dt) {
+  if (!dt) return "—";
+  try {
+    var d = new Date(dt), now = new Date();
+    var diff = Math.floor((now-d)/1000);
+    if (diff < 60)     return "Hozirgina";
+    if (diff < 3600)   return Math.floor(diff/60) + " daqiqa oldin";
+    if (diff < 86400)  return Math.floor(diff/3600) + " soat oldin";
+    if (diff < 604800) return Math.floor(diff/86400) + " kun oldin";
+    return d.toLocaleDateString("uz-UZ");
+  } catch(e) { return "—"; }
+}
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ── LOGOUT ── */
+function openLogout()  { document.getElementById("logoutModal").classList.add("show"); }
+function closeLogout() { document.getElementById("logoutModal").classList.remove("show"); }
+function confirmLogout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("username");
+  window.location.href = "../auth/login.html";
+}
+document.getElementById("logoutModal").addEventListener("click", function(e) {
+  if (e.target === this) closeLogout();
+});
+
+/* ── DARK MODE ── */
+function toggleDark() {
+  document.body.classList.toggle("dark");
+  document.getElementById("darkIcon").className =
+    document.body.classList.contains("dark") ? "fa fa-sun" : "fa fa-moon";
+  localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "1":"0");
+}
+if (localStorage.getItem("darkMode") === "1") {
+  document.body.classList.add("dark");
+  document.getElementById("darkIcon").className = "fa fa-sun";
+}
+</script>
+</body>
+</html>

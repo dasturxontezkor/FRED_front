@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FR3D – Kirish</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#535da1;--secondary:#14B789;--danger:#e74c3c;--border:#e9eaeb;--bg:#f9f9f9;--p:#717275;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+body{min-height:100vh;background:linear-gradient(135deg,#535da1 0%,#3d4580 60%,#2d3260 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
+body::before,body::after{content:'';position:fixed;border-radius:50%;pointer-events:none;}
+body::before{width:400px;height:400px;background:rgba(255,255,255,.04);top:-100px;right:-100px;}
+body::after{width:300px;height:300px;background:rgba(255,255,255,.03);bottom:-80px;left:-80px;}
+
+.card{width:100%;max-width:420px;background:#fff;border-radius:24px;padding:40px 36px;box-shadow:0 24px 60px rgba(0,0,0,.2);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:-60px;right:-60px;width:160px;height:160px;background:rgba(83,93,161,.06);border-radius:50%;}
+
+.logo{text-align:center;font-size:32px;font-weight:800;letter-spacing:3px;color:var(--primary);margin-bottom:6px;}
+.logo span{color:var(--secondary);}
+.logo-sub{text-align:center;font-size:13px;color:var(--p);margin-bottom:32px;}
+
+/* TABS */
+.tabs{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:28px;gap:4px;}
+.tab{flex:1;padding:9px;border:none;background:transparent;border-radius:9px;font-size:13px;font-weight:700;color:var(--p);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;}
+.tab.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(83,93,161,.12);}
+
+.form-panel{display:none;}
+.form-panel.active{display:block;}
+
+/* FIELDS */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--p);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.field-wrap{position:relative;}
+.field-wrap i.fi{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--p);font-size:14px;pointer-events:none;}
+.field input{width:100%;padding:12px 14px 12px 40px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:'Outfit',sans-serif;color:#000;outline:none;transition:border-color .2s,box-shadow .2s;}
+.field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(83,93,161,.1);}
+.field input.error{border-color:var(--danger);box-shadow:0 0 0 3px rgba(231,76,60,.1);}
+.field input.success{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,183,137,.1);}
+.field input::placeholder{color:#bbb;}
+
+/* PHONE */
+.phone-wrap{display:flex;gap:8px;align-items:stretch;}
+.phone-prefix{display:flex;align-items:center;gap:6px;padding:0 12px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:700;color:var(--primary);white-space:nowrap;background:#f5f6ff;}
+.phone-wrap .field-wrap{flex:1;}
+.phone-wrap input{padding-left:36px;}
+
+/* ALERTS */
+.alert{display:none;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:16px;align-items:flex-start;gap:10px;line-height:1.5;}
+.alert.show{display:flex;}
+.alert i{font-size:15px;margin-top:2px;flex-shrink:0;}
+.alert.danger {background:rgba(231,76,60,.08); color:var(--danger);  border:1px solid rgba(231,76,60,.2);}
+.alert.warning{background:rgba(249,168,37,.08);color:#b45309;        border:1px solid rgba(249,168,37,.25);}
+
+/* BTN */
+.btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),#3d4580);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(83,93,161,.35);}
+.btn:disabled{opacity:.65;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none;}
+.btn.loading .spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* HINTS */
+.field-hint{font-size:11px;margin-top:5px;display:none;}
+.field-hint.show{display:block;}
+.field-hint.err{color:var(--danger);}
+.field-hint.ok{color:var(--secondary);}
+
+.back-link{display:block;text-align:center;margin-top:18px;font-size:13px;color:var(--p);text-decoration:none;transition:color .2s;}
+.back-link:hover{color:var(--primary);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">FR<span>3D</span></div>
+  <div class="logo-sub">English Learning Platform</div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabLogin"    onclick="switchTab('login')">Kirish</button>
+    <button class="tab"        id="tabRegister" onclick="switchTab('register')">Ro'yxatdan o'tish</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="form-panel active" id="panelLogin">
+    <div class="alert danger" id="loginAlert">
+      <i class="fa fa-circle-exclamation"></i>
+      <span id="loginAlertMsg"></span>
+    </div>
+    <div class="field">
+      <label>Foydalanuvchi nomi</label>
+      <div class="field-wrap">
+        <i class="fa fa-user fi"></i>
+        <input type="text" id="loginUsername" placeholder="username" autocomplete="username">
+      </div>
+    </div>
+    <div class="field">
+      <label>Parol</label>
+      <div class="field-wrap">
+        <i class="fa fa-lock fi"></i>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+    </div>
+    <button class="btn" id="loginBtn" onclick="doLogin()">
+      <div class="spinner"></div>
+      <span>Kirish</span>
+    </button>
+    <a href="../index.html" class="back-link"><i class="fa fa-arrow-left"></i> Bosh sahifaga</a>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="form-panel" id="panelRegister">
+    <div class="alert warning" id="regAlert">
+      <i class="fa fa-triangle-exclamation"></i>
+      <span id="regAlertMsg"></span>
+    </div>
+    <div class="field">
+      <label>Foydalanuvchi nomi</label>
+      <div class="field-wrap">
+        <i class="fa fa-user fi"></i>
+        <input type="text" id="regUsername" placeholder="username" autocomplete="off"
+               oninput="clearFieldErr('regUsername')" onblur="checkUsername()">
+      </div>
+      <div class="field-hint" id="hintRegUsername"></div>
+    </div>
+    <div class="field">
+      <label>Telefon raqam</label>
+      <div class="phone-wrap">
+        <div class="phone-prefix">🇺🇿 +998</div>
+        <div class="field-wrap">
+          <i class="fa fa-phone fi"></i>
+          <input type="tel" id="regPhone" placeholder="90 123 45 67"
+                 maxlength="12" oninput="formatPhone(this)">
+        </div>
+      </div>
+      <div class="field-hint" id="hintRegPhone"></div>
+    </div>
+    <div class="field">
+      <label>Parol</label>
+      <div class="field-wrap">
+        <i class="fa fa-lock fi"></i>
+        <input type="password" id="regPassword" placeholder="Kamida 6 ta belgi"
+               autocomplete="new-password" oninput="checkPassword()">
+      </div>
+      <div class="field-hint" id="hintRegPassword"></div>
+    </div>
+    <button class="btn" id="regBtn" onclick="doRegister()">
+      <div class="spinner"></div>
+      <span>Ro'yxatdan o'tish</span>
+    </button>
+    <a href="../index.html" class="back-link"><i class="fa fa-arrow-left"></i> Bosh sahifaga</a>
+  </div>
+</div>
+
+<script src="custom.js"></script>
+</body>
+</html>

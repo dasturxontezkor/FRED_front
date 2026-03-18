@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FR3D Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --white-color:#ffffff; --primary-color:#535da1; --secondary-color:#14B789;
+  --section-bg-color:#f9f9f9; --dark-color:#000000; --p-color:#717275;
+  --border-color:#e9eaeb; --featured-border-color:#727aab;
+  --nav-width:240px; --topbar-height:64px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+body{background:var(--section-bg-color);color:var(--dark-color);transition:background .3s,color .3s;}
+
+/* LOADER */
+.page-loader{position:fixed;inset:0;background:var(--primary-color);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:1;transition:opacity .4s;}
+.page-loader.hide{opacity:0;pointer-events:none;}
+.loader-logo{color:#fff;font-size:36px;font-weight:800;letter-spacing:3px;margin-bottom:28px;}
+.loader-logo span{color:var(--secondary-color);}
+.loader-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* SIDEBAR */
+.sidebar{display:none;}
+@media(min-width:768px){
+  .sidebar{display:flex;flex-direction:column;position:fixed;top:0;left:0;width:var(--nav-width);height:100vh;background:var(--primary-color);padding:28px 0;z-index:100;box-shadow:4px 0 20px rgba(83,93,161,.15);}
+  .sidebar-logo{color:#fff;font-size:26px;font-weight:800;letter-spacing:2px;padding:0 28px 32px;border-bottom:1px solid rgba(255,255,255,.15);cursor:pointer;user-select:none;}
+  .sidebar-logo span{color:var(--secondary-color);}
+  .sidebar-nav{flex:1;padding:24px 0;display:flex;flex-direction:column;gap:4px;}
+  .nav-item-side{display:flex;align-items:center;gap:14px;padding:13px 28px;color:rgba(255,255,255,.65);font-size:14px;font-weight:500;cursor:pointer;border-left:3px solid transparent;transition:all .2s;text-decoration:none;}
+  .nav-item-side i{font-size:17px;width:20px;text-align:center;}
+  .nav-item-side:hover{background:rgba(255,255,255,.08);color:#fff;}
+  .nav-item-side.active{background:rgba(255,255,255,.12);color:#fff;border-left:3px solid var(--secondary-color);}
+  .main-content{margin-left:var(--nav-width);}
+  .bottom-nav{display:none !important;}
+}
+
+/* TOPBAR */
+.topbar{background:#fff;padding:0 20px;height:var(--topbar-height);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:50;gap:12px;}
+.topbar-logo{color:var(--primary-color);font-weight:800;font-size:22px;letter-spacing:2px;cursor:pointer;user-select:none;white-space:nowrap;}
+.topbar-logo span{color:var(--secondary-color);}
+@media(min-width:768px){.topbar-logo{display:none;}}
+
+/* SEARCH */
+.search-wrapper{position:relative;flex:1;max-width:340px;}
+.topbar-search{display:flex;align-items:center;gap:10px;background:var(--section-bg-color);border:1px solid var(--border-color);border-radius:50px;padding:8px 16px;width:100%;cursor:text;transition:border-color .2s,box-shadow .2s;}
+.topbar-search:focus-within{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(83,93,161,.1);}
+.topbar-search input{border:none;outline:none;background:transparent;font-size:13px;color:var(--dark-color);font-family:'Outfit',sans-serif;width:100%;}
+.topbar-search input::placeholder{color:var(--p-color);}
+.topbar-search i{font-size:13px;color:var(--p-color);}
+.search-dropdown{position:absolute;top:calc(100% + 8px);left:0;width:100%;background:#fff;border:1px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.12);display:none;z-index:200;}
+.search-dropdown.show{display:block;}
+.search-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background .15s;text-decoration:none;color:var(--dark-color);}
+.search-item:hover{background:var(--section-bg-color);}
+.search-item-icon{width:34px;height:34px;border-radius:10px;background:rgba(83,93,161,.1);color:var(--primary-color);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.search-item-icon.green{background:rgba(20,183,137,.1);color:var(--secondary-color);}
+.search-item-text{font-size:13px;font-weight:600;}
+.search-item-sub{font-size:11px;color:var(--p-color);margin-top:1px;}
+.search-empty{padding:20px;text-align:center;font-size:13px;color:var(--p-color);}
+.search-divider{padding:8px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--p-color);background:var(--section-bg-color);}
+
+/* TOPBAR ACTIONS */
+.topbar-actions{display:flex;align-items:center;gap:6px;}
+.action-btn{width:38px;height:38px;border-radius:50%;background:var(--section-bg-color);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--p-color);transition:all .2s;font-size:15px;}
+.action-btn:hover{background:var(--primary-color);color:#fff;border-color:var(--primary-color);}
+.action-btn.logout-btn:hover{background:#e74c3c;border-color:#e74c3c;}
+
+/* PAGE */
+.page{padding:28px 20px 100px;max-width:960px;}
+@media(min-width:768px){.page{padding:32px 36px 40px;}}
+.greeting{margin-bottom:28px;}
+.greeting h2{font-size:26px;font-weight:700;}
+.greeting p{font-size:14px;color:var(--p-color);margin-top:4px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr);}}
+.stat-card{background:#fff;border-radius:16px;padding:20px;border:1px solid var(--border-color);transition:transform .2s,box-shadow .2s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(83,93,161,.1);}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}
+.stat-icon.blue  {background:rgba(83,93,161,.1); color:var(--primary-color);}
+.stat-icon.green {background:rgba(20,183,137,.1);color:var(--secondary-color);}
+.stat-icon.purple{background:rgba(114,122,171,.1);color:var(--featured-border-color);}
+.stat-icon.dark  {background:rgba(0,0,0,.06);    color:var(--dark-color);}
+.stat-value{font-size:28px;font-weight:800;line-height:1;}
+.stat-label{font-size:12px;color:var(--p-color);margin-top:4px;}
+
+/* SHIMMER */
+.shimmer{display:inline-block;border-radius:6px;background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* CARD */
+.card{background:#fff;border-radius:20px;padding:24px;border:1px solid var(--border-color);margin-bottom:16px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.card-title{font-size:16px;font-weight:700;}
+.badge{background:rgba(20,183,137,.1);color:var(--secondary-color);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.badge.gray{background:rgba(0,0,0,.06);color:var(--p-color);}
+
+/* LAST TEST */
+.result-big{font-size:56px;font-weight:800;line-height:1;}
+.result-sub{font-size:14px;color:var(--p-color);margin-top:6px;}
+.result-meta{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;}
+.result-meta-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--p-color);}
+.result-meta-item i{color:var(--primary-color);}
+.progress-bar{height:6px;background:var(--border-color);border-radius:10px;margin-top:16px;overflow:hidden;}
+.progress-fill{height:100%;width:0%;border-radius:10px;transition:width 1s ease;background:linear-gradient(90deg,var(--primary-color),var(--secondary-color));}
+
+/* RECENT */
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border-color);gap:12px;}
+.result-row:last-child{border-bottom:none;}
+.result-row-left{display:flex;align-items:center;gap:12px;min-width:0;}
+.rr-icon{width:38px;height:38px;border-radius:10px;background:rgba(83,93,161,.08);color:var(--primary-color);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.rr-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+.rr-date{font-size:11px;color:var(--p-color);margin-top:2px;}
+.rr-score{text-align:right;flex-shrink:0;}
+.rr-pct{font-size:16px;font-weight:800;}
+.rr-detail{font-size:11px;color:var(--p-color);margin-top:2px;}
+.pct-high{color:var(--secondary-color);}
+.pct-mid{color:var(--featured-border-color);}
+.pct-low{color:#e74c3c;}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:32px 20px;color:var(--p-color);}
+.empty-state i{font-size:36px;opacity:.2;display:block;margin-bottom:10px;}
+.empty-state p{font-size:13px;}
+.empty-state a{display:inline-block;margin-top:12px;padding:9px 20px;background:var(--primary-color);color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;}
+
+/* QUICK LINKS */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.quick-card{background:#fff;border-radius:16px;padding:18px;border:1px solid var(--border-color);display:flex;align-items:center;gap:14px;cursor:pointer;text-decoration:none;transition:all .2s;color:var(--dark-color);}
+.quick-card:hover{border-color:var(--primary-color);box-shadow:0 4px 16px rgba(83,93,161,.12);transform:translateY(-1px);}
+.quick-card-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.quick-card-icon.blue  {background:rgba(83,93,161,.1); color:var(--primary-color);}
+.quick-card-icon.green {background:rgba(20,183,137,.1);color:var(--secondary-color);}
+.quick-card-icon.purple{background:rgba(114,122,171,.1);color:var(--featured-border-color);}
+.quick-card-icon.dark  {background:rgba(0,0,0,.06);    color:var(--dark-color);}
+.quick-card-label{font-size:13px;font-weight:700;}
+.quick-card-sub{font-size:11px;color:var(--p-color);margin-top:2px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal{background:#fff;border-radius:20px;padding:32px 28px;width:90%;max-width:360px;text-align:center;transform:scale(.9);transition:transform .25s;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-overlay.show .modal{transform:scale(1);}
+.modal-icon{width:60px;height:60px;background:rgba(231,76,60,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:#e74c3c;}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--p-color);margin-bottom:24px;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns button{flex:1;padding:11px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;}
+.btn-cancel{background:var(--section-bg-color);border:1px solid var(--border-color)!important;color:var(--p-color);}
+.btn-cancel:hover{background:var(--border-color);}
+.btn-logout{background:#e74c3c;color:#fff;}
+.btn-logout:hover{background:#c0392b;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:10px 0 14px;border-top:1px solid var(--border-color);z-index:100;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--p-color);cursor:pointer;padding:6px 18px;border-radius:12px;transition:all .2s;text-decoration:none;}
+.nav-item i{font-size:20px;}
+.nav-item.active{color:var(--primary-color);background:rgba(83,93,161,.08);}
+
+/* DARK MODE */
+body.dark{background:#0f0f14;color:#fff;--section-bg-color:#1a1a24;--border-color:#2a2a38;--dark-color:#ffffff;--p-color:#8888aa;}
+body.dark .topbar,body.dark .card,body.dark .stat-card,body.dark .quick-card,body.dark .bottom-nav{background:#1a1a24;border-color:#2a2a38;}
+body.dark .topbar-search{background:#111118;border-color:#2a2a38;}
+body.dark .topbar-search input{color:#fff;}
+body.dark .action-btn{background:#111118;border-color:#2a2a38;color:#8888aa;}
+body.dark .sidebar{background:#12121c;}
+body.dark .modal{background:#1a1a24;}
+body.dark .btn-cancel{background:#111118;border-color:#2a2a38!important;color:#8888aa;}
+body.dark .search-dropdown{background:#1a1a24;border-color:#2a2a38;}
+body.dark .search-item:hover{background:#111118;}
+body.dark .search-item{color:#fff;}
+body.dark .search-divider{background:#111118;}
+body.dark .rr-icon{background:rgba(83,93,161,.2);}
+body.dark .shimmer{background:linear-gradient(90deg,#2a2a38 25%,#1a1a24 50%,#2a2a38 75%);background-size:200% 100%;}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">FR<span>3D</span></div>
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal">
+    <div class="modal-icon"><i class="fa fa-right-from-bracket"></i></div>
+    <h3>Chiqmoqchimisiz?</h3>
+    <p>Hisobingizdan chiqib ketasiz. Keyingi safar qayta kirishingiz kerak bo'ladi.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeLogout()">Bekor qilish</button>
+      <button class="btn-logout" onclick="confirmLogout()">Chiqish</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">FR<span>3D</span></div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item-side active"><i class="fa fa-table-cells"></i> Dashboard</a>
+    <a href="menu.html"      class="nav-item-side"><i class="fa fa-layer-group"></i> Menu</a>
+    <a href="profile.html"   class="nav-item-side"><i class="fa fa-user"></i> Profile</a>
+    <a href="settings.html"  class="nav-item-side"><i class="fa fa-gear"></i> Settings</a>
+  </nav>
+  <div class="nav-item-side" style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:20px;" onclick="openLogout()">
+    <i class="fa fa-right-from-bracket"></i> Logout
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+  <div class="topbar">
+    <div class="topbar-logo">FR<span>3D</span></div>
+    <div class="search-wrapper">
+      <div class="topbar-search">
+        <i class="fa fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Qidirish..."
+               oninput="handleSearch(this.value)" onfocus="showSearch()" autocomplete="off">
+      </div>
+      <div class="search-dropdown" id="searchDropdown"></div>
+    </div>
+    <div class="topbar-actions">
+      <div class="action-btn" onclick="toggleDark()"><i class="fa fa-moon" id="darkIcon"></i></div>
+      <div class="action-btn logout-btn" onclick="openLogout()"><i class="fa fa-right-from-bracket"></i></div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="greeting">
+      <h2>👋 Salom, <span id="usernameEl">User</span></h2>
+      <p id="greetSub">Ma'lumotlar yuklanmoqda...</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa fa-bolt"></i></div>
+        <div class="stat-value" id="st-tests"><span class="shimmer" style="width:40px;height:28px;display:inline-block"></span></div>
+        <div class="stat-label">Tests Done</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa fa-star"></i></div>
+        <div class="stat-value" id="st-avg"><span class="shimmer" style="width:50px;height:28px;display:inline-block"></span></div>
+        <div class="stat-label">Avg Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fa fa-trophy"></i></div>
+        <div class="stat-value" id="st-best"><span class="shimmer" style="width:50px;height:28px;display:inline-block"></span></div>
+        <div class="stat-label">Best Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon dark"><i class="fa fa-clock"></i></div>
+        <div class="stat-value" id="st-time"><span class="shimmer" style="width:44px;height:28px;display:inline-block"></span></div>
+        <div class="stat-label">Study Time</div>
+      </div>
+    </div>
+
+    <!-- LAST TEST -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Oxirgi Test Natijasi</div>
+        <div class="badge gray" id="lastBadge">Yuklanmoqda</div>
+      </div>
+      <div id="lastTestBody">
+        <span class="shimmer" style="width:90px;height:56px;display:inline-block;border-radius:8px"></span>
+      </div>
+    </div>
+
+    <!-- RECENT RESULTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">So'nggi Natijalar</div>
+        <a href="menu.html" style="font-size:12px;color:var(--primary-color);font-weight:700;text-decoration:none">
+          Testlarga o'tish <i class="fa fa-arrow-right"></i>
+        </a>
+      </div>
+      <div id="recentList">
+        <span class="shimmer" style="width:100%;height:44px;display:block;border-radius:8px;margin-bottom:8px"></span>
+        <span class="shimmer" style="width:100%;height:44px;display:block;border-radius:8px"></span>
+      </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="quick-grid">
+      <a href="menu.html" class="quick-card">
+        <div class="quick-card-icon blue"><i class="fa fa-layer-group"></i></div>
+        <div><div class="quick-card-label">Menu</div><div class="quick-card-sub">Testlarni ko'rish</div></div>
+      </a>
+      <a href="profile.html" class="quick-card">
+        <div class="quick-card-icon green"><i class="fa fa-user"></i></div>
+        <div><div class="quick-card-label">Profile</div><div class="quick-card-sub">Ma'lumotlaringiz</div></div>
+      </a>
+      <a href="settings.html" class="quick-card">
+        <div class="quick-card-icon purple"><i class="fa fa-gear"></i></div>
+        <div><div class="quick-card-label">Settings</div><div class="quick-card-sub">Sozlamalar</div></div>
+      </a>
+      <a href="menu.html" class="quick-card">
+        <div class="quick-card-icon dark"><i class="fa fa-play"></i></div>
+        <div><div class="quick-card-label">Test Boshlash</div><div class="quick-card-sub">Yangi test</div></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="nav-item active"><i class="fa fa-table-cells"></i>Dashboard</a>
+  <a href="menu.html"      class="nav-item"><i class="fa fa-layer-group"></i>Menu</a>
+  <a href="profile.html"   class="nav-item"><i class="fa fa-user"></i>Profile</a>
+  <a href="settings.html"  class="nav-item"><i class="fa fa-gear"></i>Settings</a>
+</nav>
+
+<script>
+var API = "https://fr3dbg-production.up.railway.app";
+
+/* ── AUTH — token localStorage dan olinadi ── */
+var storedToken = localStorage.getItem("token");
+var storedUser  = localStorage.getItem("username");
+
+if (!storedToken || !storedUser) {
+  window.location.href = "../auth/login.html";
+}
+document.getElementById("usernameEl").textContent = storedUser || "User";
+
+function authHeaders() {
+  return {
+    "Authorization": "Bearer " + storedToken,
+    "Content-Type":  "application/json"
+  };
+}
+
+/* ── LOADER + INIT ── */
+window.addEventListener("load", function() {
+  loadDashboard();
+  setTimeout(function() {
+    document.getElementById("pageLoader").classList.add("hide");
+  }, 700);
+});
+
+/* ── LOAD DASHBOARD ── */
+async function loadDashboard() {
+  try {
+    var [sRes, rRes] = await Promise.all([
+      fetch(API + "/api/results/stats", { headers: authHeaders() }),
+      fetch(API + "/api/results/my",    { headers: authHeaders() })
+    ]);
+
+    // Token muddati tugagan
+    if (sRes.status === 401 || rRes.status === 401) {
+      confirmLogout(); return;
+    }
+
+    var sData = await sRes.json();
+    var rData = await rRes.json();
+
+    var stats   = sData.stats   || sData;       // { totalTests, avgScore, bestScore, totalTimeSpent }
+    var results = rData.results || rData || [];  // ResultDTO[]
+
+    renderStats(stats);
+    renderLastTest(results.length ? results[0] : null);
+    renderRecent(results.slice(0, 5));
+
+    var hour = new Date().getHours();
+    var greet = hour < 12 ? "Xayrli tong" : hour < 17 ? "Xayrli kun" : "Xayrli kech";
+    document.getElementById("greetSub").textContent = greet + "! Bugungi o'quv jarayoningiz haqida umumiy ma'lumot.";
+
+  } catch(err) {
+    console.error("Dashboard error:", err);
+    document.getElementById("greetSub").textContent = "Ma'lumotlarni yuklashda xatolik yuz berdi.";
+    renderStats(null);
+    renderLastTest(null);
+    renderRecent([]);
+  }
+}
+
+/* ── STATS ── */
+function renderStats(s) {
+  if (!s) {
+    ["st-tests","st-avg","st-best","st-time"].forEach(function(id) {
+      document.getElementById(id).textContent = "—";
+    });
+    return;
+  }
+  document.getElementById("st-tests").textContent = s.totalTests || 0;
+  document.getElementById("st-avg").textContent   = Math.round(s.avgScore  || 0) + "%";
+  document.getElementById("st-best").textContent  = Math.round(s.bestScore || 0) + "%";
+  document.getElementById("st-time").textContent  = fmtTime(s.totalTimeSpent || 0);
+}
+
+/* ── LAST TEST ── */
+function renderLastTest(r) {
+  var badge = document.getElementById("lastBadge");
+  var body  = document.getElementById("lastTestBody");
+
+  if (!r) {
+    badge.textContent = "Hali yo'q";
+    badge.className   = "badge gray";
+    body.innerHTML = '<div class="empty-state"><i class="fa fa-file-circle-check"></i><p>Hali birorta test topshirilmagan</p><a href="menu.html">Test boshlash →</a></div>';
+    return;
+  }
+
+  var pct   = Math.round(r.percentage || 0);
+  var color = pct >= 70 ? "#14B789" : pct >= 40 ? "#727aab" : "#e74c3c";
+  var emoji = pct >= 80 ? "🏆" : pct >= 60 ? "👍" : pct >= 40 ? "📚" : "💪";
+
+  badge.textContent = "Oxirgi natija";
+  badge.className   = "badge";
+
+  body.innerHTML =
+    '<div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap">' +
+      '<div class="result-big" style="color:' + color + '">' + pct + '%</div>' +
+      '<div style="margin-bottom:8px">' +
+        '<div style="font-size:17px;font-weight:700">' + emoji + ' ' + esc(r.testName || "Test") + '</div>' +
+        '<div class="result-sub">' + r.score + ' ta to\'g\'ri / ' + r.total + ' ta savol</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="result-meta">' +
+      '<div class="result-meta-item"><i class="fa fa-clock"></i> ' + fmtSec(r.timeSpent || 0) + '</div>' +
+      '<div class="result-meta-item"><i class="fa fa-calendar"></i> ' + fmtDate(r.finishedAt) + '</div>' +
+    '</div>' +
+    '<div class="progress-bar"><div class="progress-fill" id="lastProg" style="background:linear-gradient(90deg,var(--primary-color),' + color + ')"></div></div>';
+
+  setTimeout(function() {
+    var el = document.getElementById("lastProg");
+    if (el) el.style.width = pct + "%";
+  }, 100);
+}
+
+/* ── RECENT RESULTS ── */
+function renderRecent(results) {
+  var el = document.getElementById("recentList");
+  if (!results || !results.length) {
+    el.innerHTML = '<div class="empty-state"><i class="fa fa-chart-bar"></i><p>Natijalar hali yo\'q</p><a href="menu.html">Test boshlash →</a></div>';
+    return;
+  }
+  el.innerHTML = results.map(function(r) {
+    var pct = Math.round(r.percentage || 0);
+    var cls = pct >= 70 ? "pct-high" : pct >= 40 ? "pct-mid" : "pct-low";
+    return '<div class="result-row">' +
+      '<div class="result-row-left">' +
+        '<div class="rr-icon"><i class="fa fa-file-circle-check"></i></div>' +
+        '<div>' +
+          '<div class="rr-name">' + esc(r.testName || "Test") + '</div>' +
+          '<div class="rr-date">' + fmtDate(r.finishedAt) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="rr-score">' +
+        '<div class="rr-pct ' + cls + '">' + pct + '%</div>' +
+        '<div class="rr-detail">' + r.score + '/' + r.total + ' · ' + fmtSec(r.timeSpent || 0) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── FORMAT HELPERS ── */
+function fmtTime(sec) {
+  if (!sec) return "0m";
+  var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+  return h > 0 ? h + "h " + (m ? m + "m" : "") : m + "m";
+}
+function fmtSec(sec) {
+  if (!sec) return "0:00";
+  return Math.floor(sec/60) + ":" + String(sec%60).padStart(2,"0");
+}
+function fmtDate(dt) {
+  if (!dt) return "—";
+  try {
+    var d = new Date(dt), now = new Date();
+    var diff = Math.floor((now - d) / 1000);
+    if (diff < 60)     return "Hozirgina";
+    if (diff < 3600)   return Math.floor(diff/60) + " daqiqa oldin";
+    if (diff < 86400)  return Math.floor(diff/3600) + " soat oldin";
+    if (diff < 604800) return Math.floor(diff/86400) + " kun oldin";
+    return d.toLocaleDateString("uz-UZ");
+  } catch(e) { return "—"; }
+}
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ── LOGOUT ── */
+function openLogout()  { document.getElementById("logoutModal").classList.add("show"); }
+function closeLogout() { document.getElementById("logoutModal").classList.remove("show"); }
+function confirmLogout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("username");
+  window.location.href = "../auth/login.html";
+}
+document.getElementById("logoutModal").addEventListener("click", function(e) {
+  if (e.target === this) closeLogout();
+});
+
+/* ── DARK MODE ── */
+function toggleDark() {
+  document.body.classList.toggle("dark");
+  document.getElementById("darkIcon").className =
+    document.body.classList.contains("dark") ? "fa fa-sun" : "fa fa-moon";
+  localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "1" : "0");
+}
+if (localStorage.getItem("darkMode") === "1") {
+  document.body.classList.add("dark");
+  document.getElementById("darkIcon").className = "fa fa-sun";
+}
+
+/* ── SEARCH ── */
+var pages = [
+  {label:"Dashboard",    sub:"Asosiy sahifa",      icon:"fa-table-cells", iconClass:"blue",   url:"dashboard.html"},
+  {label:"Menu",         sub:"Testlar ro'yxati",    icon:"fa-layer-group", iconClass:"blue",   url:"menu.html"},
+  {label:"Profile",      sub:"Shaxsiy ma'lumotlar", icon:"fa-user",        iconClass:"green",  url:"profile.html"},
+  {label:"Settings",     sub:"Sozlamalar",          icon:"fa-gear",        iconClass:"purple", url:"settings.html"},
+  {label:"Test Boshlash",sub:"Yangi test",           icon:"fa-play",        iconClass:"green",  url:"menu.html"},
+];
+
+function searchItem(p) {
+  return '<a href="' + p.url + '" class="search-item">' +
+    '<div class="search-item-icon ' + p.iconClass + '"><i class="fa ' + p.icon + '"></i></div>' +
+    '<div><div class="search-item-text">' + p.label + '</div><div class="search-item-sub">' + p.sub + '</div></div>' +
+  '</a>';
+}
+function handleSearch(val) {
+  var dd = document.getElementById("searchDropdown");
+  var q  = val.trim().toLowerCase();
+  if (!q) { showDefaultSearch(); return; }
+  var f = pages.filter(function(p){ return p.label.toLowerCase().includes(q) || p.sub.toLowerCase().includes(q); });
+  dd.innerHTML = f.length
+    ? '<div class="search-divider">Natijalar</div>' + f.map(searchItem).join('')
+    : '<div class="search-empty"><i class="fa fa-magnifying-glass" style="display:block;font-size:18px;opacity:.4;margin-bottom:6px"></i>Hech narsa topilmadi</div>';
+  dd.classList.add("show");
+}
+function showSearch() {
+  var v = document.getElementById("searchInput").value;
+  if (v.trim()) handleSearch(v); else showDefaultSearch();
+}
+function showDefaultSearch() {
+  var dd = document.getElementById("searchDropdown");
+  dd.innerHTML = '<div class="search-divider">Tez o\'tish</div>' + pages.slice(0,4).map(searchItem).join('');
+  dd.classList.add("show");
+}
+document.addEventListener("click", function(e) {
+  if (!document.querySelector(".search-wrapper").contains(e.target))
+    document.getElementById("searchDropdown").classList.remove("show");
+});
+</script>
+</body>
+</html>

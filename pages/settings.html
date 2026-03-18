@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FR3D – Sozlamalar</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#535da1;--secondary:#14B789;--danger:#e74c3c;
+  --warning:#f59e0b;--bg:#f4f5fb;--card:#fff;
+  --dark:#0f1117;--p:#6b7280;--border:#e5e7eb;--radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+body{min-height:100vh;background:var(--bg);color:var(--dark);}
+
+/* ── TOP NAV ── */
+.topnav{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.nav-logo{font-size:22px;font-weight:800;letter-spacing:2px;color:var(--primary);}
+.nav-logo span{color:var(--secondary);}
+.nav-back{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;
+  color:var(--p);text-decoration:none;padding:8px 14px;border-radius:10px;
+  border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all .2s;}
+.nav-back:hover{color:var(--primary);border-color:var(--primary);background:rgba(83,93,161,.05);}
+
+/* ── PAGE ── */
+.page{max-width:560px;margin:0 auto;padding:32px 20px 60px;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--primary) 0%,#3d4580 100%);
+  border-radius:20px;padding:28px 28px 24px;margin-bottom:28px;
+  display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-30px;top:-30px;
+  width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.06);}
+.hero-avatar{width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  font-weight:800;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.25);}
+.hero-info{flex:1;min-width:0;}
+.hero-name{font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hero-phone{font-size:13px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:6px;}
+.hero-phone i{font-size:11px;}
+
+/* ── SECTION ── */
+.section{margin-bottom:20px;}
+.section-label{font-size:11px;font-weight:800;color:var(--p);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:10px;padding:0 4px;}
+
+/* ── SETTING CARD ── */
+.scard{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.scard-row{display:flex;align-items:center;gap:14px;padding:16px 18px;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.scard-row:last-child{border-bottom:none;}
+.scard-row:hover{background:#f9fafb;}
+.scard-row.open{background:rgba(83,93,161,.03);}
+.scard-row.danger-row:hover{background:rgba(231,76,60,.04);}
+.sr-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:15px;flex-shrink:0;}
+.ic-blue{background:rgba(83,93,161,.1);color:var(--primary);}
+.ic-teal{background:rgba(20,183,137,.1);color:var(--secondary);}
+.ic-red {background:rgba(231,76,60,.1); color:var(--danger);}
+.sr-body{flex:1;min-width:0;}
+.sr-title{font-size:14px;font-weight:700;color:var(--dark);}
+.sr-sub{font-size:12px;color:var(--p);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sr-arrow{color:var(--border);font-size:12px;transition:transform .2s;}
+.scard-row.open .sr-arrow{transform:rotate(90deg);color:var(--primary);}
+.danger-row .sr-title{color:var(--danger);}
+
+/* ── EXPAND FORM ── */
+.expand-form{display:none;padding:0 18px 18px;border-bottom:1px solid var(--border);
+  animation:slideDown .2s ease;}
+.expand-form.show{display:block;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+.ef-field{margin-bottom:12px;}
+.ef-field label{display:block;font-size:11px;font-weight:700;color:var(--p);
+  margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.ef-wrap{position:relative;}
+.ef-wrap i.ef-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:var(--p);font-size:13px;pointer-events:none;}
+.ef-wrap input{width:100%;padding:11px 13px 11px 36px;border:1.5px solid var(--border);
+  border-radius:11px;font-size:14px;font-family:'Outfit',sans-serif;color:var(--dark);
+  outline:none;transition:border .2s,box-shadow .2s;background:#fff;}
+.ef-wrap input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(83,93,161,.1);}
+.ef-wrap input.err{border-color:var(--danger);box-shadow:0 0 0 3px rgba(231,76,60,.1);}
+.ef-wrap input.ok {border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,183,137,.1);}
+.ef-wrap input::placeholder{color:#c0c4cc;}
+
+/* phone prefix */
+.phone-row{display:flex;gap:8px;align-items:stretch;}
+.phone-prefix{display:flex;align-items:center;gap:5px;padding:0 12px;
+  border:1.5px solid var(--border);border-radius:11px;font-size:13px;
+  font-weight:700;color:var(--primary);background:#f5f6ff;white-space:nowrap;flex-shrink:0;}
+.phone-row .ef-wrap{flex:1;}
+
+/* hint */
+.ef-hint{font-size:11px;margin-top:4px;display:none;}
+.ef-hint.show{display:block;}
+.ef-hint.err{color:var(--danger);}
+.ef-hint.ok {color:var(--secondary);}
+
+/* alert */
+.ef-alert{display:none;padding:10px 13px;border-radius:10px;font-size:12px;
+  font-weight:600;margin-bottom:12px;align-items:gap;gap:8px;}
+.ef-alert.show{display:flex;align-items:center;}
+.ef-alert i{flex-shrink:0;margin-right:6px;}
+.ef-alert.danger {background:rgba(231,76,60,.08); color:var(--danger);  border:1px solid rgba(231,76,60,.2);}
+.ef-alert.success{background:rgba(20,183,137,.08);color:#0d7a5f;        border:1px solid rgba(20,183,137,.2);}
+.ef-alert.warning{background:rgba(245,158,11,.08); color:#92400e;        border:1px solid rgba(245,158,11,.2);}
+
+/* save btn */
+.ef-btn{width:100%;padding:12px;border:none;border-radius:11px;
+  background:linear-gradient(135deg,var(--primary),#3d4580);
+  color:#fff;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'Outfit',sans-serif;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
+.ef-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(83,93,161,.3);}
+.ef-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.ef-btn .spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;display:none;}
+.ef-btn.loading .spin{display:block;}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── LOGOUT CARD ── */
+.logout-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.logout-btn{width:100%;padding:16px 18px;border:none;background:transparent;
+  display:flex;align-items:center;gap:14px;cursor:pointer;font-family:'Outfit',sans-serif;
+  transition:background .15s;}
+.logout-btn:hover{background:rgba(231,76,60,.04);}
+.logout-btn .lb-icon{width:38px;height:38px;border-radius:11px;
+  background:rgba(231,76,60,.1);color:var(--danger);
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.logout-btn .lb-text{font-size:14px;font-weight:700;color:var(--danger);text-align:left;}
+.logout-btn .lb-sub{font-size:12px;color:var(--p);font-weight:400;display:block;margin-top:1px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  padding:11px 20px;border-radius:12px;font-size:13px;font-weight:600;
+  z-index:9999;opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;
+  color:#fff;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.15);}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.success{background:var(--secondary);}
+.toast.danger {background:var(--danger);}
+.toast.warning{background:var(--warning);}
+
+/* skeleton */
+.skel{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
+  background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:8px;height:14px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="nav-logo">FR<span>3D</span></div>
+  <a href="dashboard.html" class="nav-back">
+    <i class="fa fa-arrow-left"></i> Orqaga
+  </a>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-avatar" id="heroAvatar">?</div>
+    <div class="hero-info">
+      <div class="hero-name" id="heroName"><div class="skel" style="width:120px;height:18px;background:rgba(255,255,255,.15)"></div></div>
+      <div class="hero-phone" id="heroPhone">
+        <i class="fa fa-phone"></i>
+        <span>Yuklanmoqda...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MA'LUMOTLARNI TAHRIRLASH -->
+  <div class="section">
+    <div class="section-label">Ma'lumotlarni tahrirlash</div>
+    <div class="scard">
+
+      <!-- USERNAME -->
+      <div class="scard-row" id="row-username" onclick="toggleForm('username')">
+        <div class="sr-icon ic-blue"><i class="fa fa-user"></i></div>
+        <div class="sr-body">
+          <div class="sr-title">Username o'zgartirish</div>
+          <div class="sr-sub" id="cur-username">Yuklanmoqda...</div>
+        </div>
+        <i class="fa fa-chevron-right sr-arrow"></i>
+      </div>
+      <div class="expand-form" id="form-username">
+        <div class="ef-alert" id="alert-username"><i class="fa fa-circle-exclamation"></i><span id="alert-username-msg"></span></div>
+        <div class="ef-field">
+          <label>Yangi username</label>
+          <div class="ef-wrap">
+            <i class="fa fa-user ef-ico"></i>
+            <input type="text" id="inp-username" placeholder="yangi_username"
+                   oninput="clearState('username')" autocomplete="off">
+          </div>
+          <div class="ef-hint" id="hint-username"></div>
+        </div>
+        <div class="ef-field">
+          <label>Parolni tasdiqlang</label>
+          <div class="ef-wrap">
+            <i class="fa fa-lock ef-ico"></i>
+            <input type="password" id="inp-upass" placeholder="••••••••"
+                   oninput="clearState('username')" autocomplete="current-password">
+          </div>
+        </div>
+        <button class="ef-btn" id="btn-username" onclick="saveUsername()">
+          <div class="spin"></div>
+          <i class="fa fa-floppy-disk"></i> Saqlash
+        </button>
+      </div>
+
+      <!-- PHONE -->
+      <div class="scard-row" id="row-phone" onclick="toggleForm('phone')">
+        <div class="sr-icon ic-teal"><i class="fa fa-phone"></i></div>
+        <div class="sr-body">
+          <div class="sr-title">Telefon raqam o'zgartirish</div>
+          <div class="sr-sub" id="cur-phone">Yuklanmoqda...</div>
+        </div>
+        <i class="fa fa-chevron-right sr-arrow"></i>
+      </div>
+      <div class="expand-form" id="form-phone">
+        <div class="ef-alert" id="alert-phone"><i class="fa fa-circle-exclamation"></i><span id="alert-phone-msg"></span></div>
+        <div class="ef-field">
+          <label>Yangi telefon raqam</label>
+          <div class="phone-row">
+            <div class="phone-prefix">🇺🇿 +998</div>
+            <div class="ef-wrap">
+              <i class="fa fa-phone ef-ico"></i>
+              <input type="tel" id="inp-phone" placeholder="90 123 45 67"
+                     maxlength="12" oninput="fmtPhone(this);clearState('phone')">
+            </div>
+          </div>
+          <div class="ef-hint" id="hint-phone"></div>
+        </div>
+        <div class="ef-field">
+          <label>Parolni tasdiqlang</label>
+          <div class="ef-wrap">
+            <i class="fa fa-lock ef-ico"></i>
+            <input type="password" id="inp-ppass" placeholder="••••••••"
+                   oninput="clearState('phone')" autocomplete="current-password">
+          </div>
+        </div>
+        <button class="ef-btn" id="btn-phone" onclick="savePhone()">
+          <div class="spin"></div>
+          <i class="fa fa-floppy-disk"></i> Saqlash
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHIQISH -->
+  <div class="section">
+    <div class="section-label">Sessiya</div>
+    <div class="logout-card">
+      <button class="logout-btn" onclick="doLogout()">
+        <div class="lb-icon"><i class="fa fa-right-from-bracket"></i></div>
+        <div>
+          <div class="lb-text">Chiqish</div>
+          <span class="lb-sub">Hisobdan chiqish va login sahifasiga o'tish</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el"></div>
+
+<script>
+var API      = "https://fr3dbg-production.up.railway.app";
+var token    = localStorage.getItem("token");
+var username = localStorage.getItem("username") || "";
+var openForm = null; // hozir ochiq forma: 'username' | 'phone' | null
+var toastTmr;
+
+/* ── AUTH GUARD ── */
+if (!token) { window.location.href = "../auth/login.html"; }
+
+/* ── LOAD USER INFO ── */
+async function loadMe() {
+  try {
+    var r = await fetch(API + "/api/user/me", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    if (r.status === 401) { doLogout(); return; }
+    var d = await r.json();
+    if (!d.success) return;
+
+    // Hero
+    var uname = d.username || "?";
+    document.getElementById("heroAvatar").textContent = uname[0].toUpperCase();
+    document.getElementById("heroName").textContent   = uname;
+    var phone = d.phone || "—";
+    document.getElementById("heroPhone").innerHTML =
+      '<i class="fa fa-phone"></i> <span>' + esc(phone) + '</span>';
+
+    // Row subtitles
+    document.getElementById("cur-username").textContent = "@" + uname;
+    document.getElementById("cur-phone").textContent    = phone || "Kiritilmagan";
+
+    // Pre-fill inputs
+    document.getElementById("inp-username").value = uname;
+    document.getElementById("inp-phone").value    = phone.replace("+998","").replace(/\s/g,"").replace(/\D/g,"")
+      .replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, "$1 $2 $3 $4");
+
+  } catch(e) {
+    showToast("Ma'lumotlarni yuklashda xato", "danger");
+  }
+}
+loadMe();
+
+/* ── TOGGLE EXPAND FORM ── */
+function toggleForm(name) {
+  // Agar boshqa forma ochiq bo'lsa yopamiz
+  if (openForm && openForm !== name) {
+    document.getElementById("form-" + openForm).classList.remove("show");
+    document.getElementById("row-"  + openForm).classList.remove("open");
+  }
+
+  var form = document.getElementById("form-" + name);
+  var row  = document.getElementById("row-"  + name);
+  var isOpen = form.classList.contains("show");
+
+  form.classList.toggle("show", !isOpen);
+  row.classList.toggle("open",  !isOpen);
+  openForm = isOpen ? null : name;
+
+  // Ochilganda inputga fokus
+  if (!isOpen) {
+    setTimeout(function(){
+      var inp = document.getElementById("inp-" + name);
+      if (inp) inp.focus();
+    }, 220);
+  }
+}
+
+/* ── PHONE FORMAT ── */
+function fmtPhone(el) {
+  var d = el.value.replace(/\D/g,"").slice(0,9);
+  var o = "";
+  if (d.length > 0) o += d.slice(0,2);
+  if (d.length > 2) o += " " + d.slice(2,5);
+  if (d.length > 5) o += " " + d.slice(5,7);
+  if (d.length > 7) o += " " + d.slice(7,9);
+  el.value = o;
+
+  var hint = document.getElementById("hint-phone");
+  if (d.length === 9) {
+    el.className = "ok"; hint.className = "ef-hint show ok"; hint.textContent = "✓ Raqam to'liq";
+  } else if (d.length > 0) {
+    el.className = "err"; hint.className = "ef-hint show err"; hint.textContent = "9 ta raqam kiriting";
+  } else {
+    el.className = ""; hint.className = "ef-hint";
+  }
+}
+
+/* ── CLEAR STATE ── */
+function clearState(name) {
+  document.getElementById("alert-" + name).classList.remove("show");
+}
+
+/* ── SHOW ALERT inside form ── */
+function showFormAlert(name, msg, type) {
+  var el  = document.getElementById("alert-" + name);
+  var msg_el = document.getElementById("alert-" + name + "-msg");
+  el.className = "ef-alert " + type + " show";
+  if (msg_el) msg_el.textContent = msg;
+}
+
+/* ── SET LOADING ── */
+function setLoading(btnId, on) {
+  var btn = document.getElementById(btnId);
+  btn.disabled = on;
+  btn.classList.toggle("loading", on);
+}
+
+/* ── SAVE USERNAME ── */
+async function saveUsername() {
+  var newUN = document.getElementById("inp-username").value.trim();
+  var pass  = document.getElementById("inp-upass").value;
+
+  clearState("username");
+
+  if (!newUN)       { showFormAlert("username", "Username bo'sh bo'lmasin", "warning"); return; }
+  if (newUN.length < 3){ showFormAlert("username", "Username kamida 3 ta belgi bo'lishi kerak", "warning"); return; }
+  if (!pass)        { showFormAlert("username", "Parolni kiriting", "warning"); return; }
+
+  setLoading("btn-username", true);
+  try {
+    var r = await fetch(API + "/api/user/username", {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", "Authorization":"Bearer " + token },
+      body: JSON.stringify({ username: newUN, password: pass })
+    });
+    var d = await r.json();
+
+    if (r.status === 409) {
+      showFormAlert("username",
+        '😅 "' + newUN + '" username allaqachon band. Boshqasini sinab ko\'ring!', "warning");
+      document.getElementById("inp-username").className = "err";
+      return;
+    }
+    if (!r.ok || d.error) {
+      showFormAlert("username", d.error || "Xato yuz berdi", "danger");
+      return;
+    }
+
+    // Muvaffaqiyat
+    localStorage.setItem("username", newUN);
+    document.getElementById("heroAvatar").textContent  = newUN[0].toUpperCase();
+    document.getElementById("heroName").textContent    = newUN;
+    document.getElementById("cur-username").textContent = "@" + newUN;
+    document.getElementById("inp-upass").value = "";
+    document.getElementById("inp-username").className = "ok";
+
+    showToast("Username muvaffaqiyatli o'zgartirildi!", "success");
+    setTimeout(function(){ toggleForm("username"); }, 800);
+
+  } catch(e) {
+    showFormAlert("username", "Server bilan bog'lanib bo'lmadi", "danger");
+  } finally {
+    setLoading("btn-username", false);
+  }
+}
+
+/* ── SAVE PHONE ── */
+async function savePhone() {
+  var digits = document.getElementById("inp-phone").value.replace(/\D/g,"");
+  var pass   = document.getElementById("inp-ppass").value;
+
+  clearState("phone");
+
+  if (digits.length !== 9){ showFormAlert("phone", "Telefon raqamni to'liq kiriting (9 ta raqam)", "warning"); return; }
+  if (!pass)               { showFormAlert("phone", "Parolni kiriting", "warning"); return; }
+
+  setLoading("btn-phone", true);
+  try {
+    var r = await fetch(API + "/api/user/phone", {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", "Authorization":"Bearer " + token },
+      body: JSON.stringify({ phone: "+998" + digits, password: pass })
+    });
+    var d = await r.json();
+
+    if (!r.ok || d.error) {
+      showFormAlert("phone", d.error || "Xato yuz berdi", "danger");
+      return;
+    }
+
+    var fullPhone = "+998" + digits;
+    document.getElementById("heroPhone").innerHTML =
+      '<i class="fa fa-phone"></i> <span>' + esc(fullPhone) + '</span>';
+    document.getElementById("cur-phone").textContent = fullPhone;
+    document.getElementById("inp-ppass").value = "";
+    document.getElementById("inp-phone").className = "ok";
+
+    showToast("Telefon raqam yangilandi!", "success");
+    setTimeout(function(){ toggleForm("phone"); }, 800);
+
+  } catch(e) {
+    showFormAlert("phone", "Server bilan bog'lanib bo'lmadi", "danger");
+  } finally {
+    setLoading("btn-phone", false);
+  }
+}
+
+/* ── LOGOUT ── */
+function doLogout() {
+  if (!confirm("Hisobdan chiqmoqchimisiz?")) return;
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("username");
+  localStorage.removeItem("joinedAt");
+  window.location.href = "../auth/login.html";
+}
+
+/* ── TOAST ── */
+function showToast(msg, type) {
+  var el = document.getElementById("toast-el");
+  var icons = { success:"check-circle", danger:"triangle-exclamation", warning:"triangle-exclamation" };
+  el.className = "toast " + (type||"success");
+  el.innerHTML = '<i class="fa fa-' + (icons[type]||"bell") + '"></i> ' + msg;
+  el.classList.add("show");
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(function(){ el.classList.remove("show"); }, 3000);
+}
+
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>
